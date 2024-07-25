@@ -1,9 +1,209 @@
 <!DOCTYPE html>
-<html>
+<html  lang="en">
     <head>
-        <title>Example</title>
+        <meta charset="UTF-8">
+        <title>HDI</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://d3js.org/d3.v7.min.js"></script>
     </head>
-    <body>
-        <p>This is an example of a simple HTML page with one paragraph.</p>
+    <body onload="init()">
+        <div class="TitleText">
+            <div class="introText">
+                <p>HDI</p>
+                <img src="src/img/psyche-title.png" alt="">
+                <p>Human Development Index</p>
+                <img class="sparks" id="sparkRight" src="src/img/sparkRight.png" alt="">
+                <img class="sparks" id="sparkLeft" src="src/img/sparkLeft.png" alt="">
+            </div>
+        </div>
+        <div class="hdi-description">
+            <p>
+                The Human Development Index (HDI) is a composite measure used to evaluate and compare the overall development and quality of life across countries. It was introduced by the United Nations Development Programme (UNDP) in 1990.
+            </p>
+            <p>
+                <strong>HDI is calculated using three key dimensions:</strong>
+            </p>
+            <ul>
+                <li><strong>Health:</strong> Measured by life expectancy at birth. This reflects the ability to live a long and healthy life.</li>
+                <li><strong>Education:</strong> Assessed through two indicators:
+                    <ul>
+                        <li><strong>Mean years of schooling:</strong> The average number of years of education received by people aged 25 and older.</li>
+                        <li><strong>Expected years of schooling:</strong> The total number of years of schooling a child entering the education system can expect to receive.</li>
+                    </ul>
+                </li>
+                <li><strong>Standard of Living:</strong> Measured by Gross National Income (GNI) per capita, adjusted for purchasing power parity (PPP). This reflects the average income and economic well-being of a country's citizens.</li>
+            </ul>
+            <p>
+                <strong>Calculation Process:</strong>
+            </p>
+            <ol>
+                <li><strong>Normalize each indicator:</strong> Values for each dimension are normalized on a scale from 0 to 1, where 0 represents the lowest possible value and 1 represents the highest.</li>
+                <li><strong>Calculate the dimension indices:</strong> Each dimension's normalized score is calculated by comparing the country's data to the minimum and maximum values observed globally.</li>
+                <li><strong>Compute the HDI:</strong> The HDI is the geometric mean of the three dimension indices, which is given by:
+                    <br>
+                    <code>HDI = √[3]{Health Index × Education Index × Income Index}</code>
+                </li>
+            </ol>
+            <p>
+                The resulting index value ranges from 0 to 1, with higher values indicating higher levels of human development.
+            </p>
+        </div>
+        <div class="chart-title">
+            <h2>HDI by Country</h2>
+        </div>
+        <div id="legend" class="legend-container"></div>
+                </div>
+        <div id="upper-right-box" class="upper-right-box">
+            <h3>Factors of HDI</h3>
+            <a href="pages/health.html">Health</a>
+            <a href="pages/education.html">Education</a>
+            <a href="pages/standard_of_living.html">Standard of Living</a>
+        </div>
+        <script>
+            async function init() {
+                const data = await d3.csv('data/HDI_Table.csv');
+                console.log(data);
+               
+                // Convert HDI to a number
+                data.forEach(d => {
+                    d.HDI = +d.HDI;
+                    d.lifeExpectancy = +d.lifeExpectancy;
+                    d.schoolingMean = +d.schoolingMean;
+                    d.GNIPerCapita = +d.GNIPerCapita;   
+                });
+                 // Sort data by HDI in descending order
+                data.sort((a, b) => b.HDI - a.HDI);
+
+                // Define the color scale based on continent
+                const colorScale = d3.scaleOrdinal()
+                .domain(["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "N/A"])
+                .range(["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FFD700", "#8A2BE2", "000000"]);
+
+
+                const margin = {top: 50, right: 30, bottom: 50, left: 150};
+                const width = 700 - margin.left - margin.right;
+                const height = 2000 - margin.top - margin.bottom;
+
+                const svg = d3.select("body").append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+                // X scale
+                const x = d3.scaleLinear()
+                    .domain([0, d3.max(data, d => d.HDI)])
+                    .range([0, width]);
+
+                // Y scale
+                const y = d3.scaleBand()
+                    .domain(data.map(d => d.country))
+                    .range([0, height])
+                    .padding(0.1);
+
+                // X axis
+                svg.append("g")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(x));
+
+                // Y axis
+                svg.append("g")
+                    .call(d3.axisLeft(y));
+
+        // Create tooltip
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip");
+
+                // Bars
+                svg.selectAll(".bar")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("x", 0)
+                    .attr("y", d => y(d.country))
+                    .attr("width", d => x(d.HDI))
+                    .attr("height", y.bandwidth())
+                    .attr("fill", d => colorScale(d.continent))
+                    .on("mouseover", (event, d) => {
+                tooltip
+                    .html(`<strong>Country:</strong> ${d.country}<br>
+                           <strong>HDI:</strong> ${d.HDI}<br>
+                           <strong>Life Expectancy:</strong> ${d.lifeExpectancy}<br>
+                           <strong>Mean Schooling:</strong> ${d.schoolingMean}<br>
+                           <strong>GNI per Capita:</strong> ${d.GNIPerCapita}`)
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY - 28}px`)
+                    .classed("visible", true);
+            })
+            .on("mousemove", (event) => {
+                tooltip
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY - 28}px`);
+            })
+            .on("mouseout", () => {
+                tooltip.classed("visible", false);
+                    
+            });
+
+                // X axis label
+                svg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom - 10)
+                    .attr("text-anchor", "middle")
+                    .text("Human Development Index (HDI)");
+
+                // Y axis label
+                svg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -height / 2)
+                    .attr("y", -margin.left + 20)
+                    .attr("text-anchor", "middle")
+                    .text("Country");
+
+                 // Add legend
+    const legend = d3.select("#legend").append("svg")
+        .attr("width", 150)
+        .attr("height", colorScale.domain().length * 20);
+
+    const legendItems = legend.selectAll(".legend-item")
+        .data(colorScale.domain())
+        .enter().append("g")
+        .attr("class", "legend-item")
+        .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+    legendItems.append("rect")
+        .attr("x", 0)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", d => colorScale(d));
+
+    legendItems.append("text")
+        .attr("x", 25)
+        .attr("y", 14)
+        .text(d => d);   
+
+    }
+
+     // Fade in legend on scroll
+     function handleScroll() {
+                    const hdiDescriptionBottom = document.querySelector('.hdi-description').getBoundingClientRect().bottom;
+                    const legend = document.querySelector('#legend');
+                    const upperRightBox = document.querySelector('#upper-right-box');
+                    if (window.scrollY > hdiDescriptionBottom) {
+                        legend.classList.add('visible');
+                        upperRightBox.classList.add('visible');
+                    } else {
+                        legend.classList.remove('visible');
+                        upperRightBox.classList.remove('visible');
+                    }
+                }
+
+                // Attach scroll event listener
+                window.addEventListener('scroll', handleScroll);
+                handleScroll();
+
+        </script>
     </body>
 </html>
