@@ -2,7 +2,7 @@
 <html  lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>HDI</title>
+        <title>Human Development Index (HDI)</title>
         <link rel="stylesheet" href="style.css">
         <script src="https://d3js.org/d3.v7.min.js"></script>
     </head>
@@ -11,53 +11,47 @@
             <div class="introText">
                 <p>HDI</p>
                 <img src="src/img/psyche-title.png" alt="">
-                <p>Human Development Index</p>
+                <p>A comparison between two countries</p>
                 <img class="sparks" id="sparkRight" src="src/img/sparkRight.png" alt="">
                 <img class="sparks" id="sparkLeft" src="src/img/sparkLeft.png" alt="">
             </div>
-        </div>
-        <div class="hdi-description">
-            <p>
-                The Human Development Index (HDI) is a composite measure used to evaluate and compare the overall development and quality of life across countries. It was introduced by the United Nations Development Programme (UNDP) in 1990.
-            </p>
-            <p>
-                <strong>HDI is calculated using three key dimensions:</strong>
-            </p>
-            <ul>
-                <li><strong>Health:</strong> Measured by life expectancy at birth. This reflects the ability to live a long and healthy life.</li>
-                <li><strong>Education:</strong> Assessed through two indicators:
-                    <ul>
-                        <li><strong>Mean years of schooling:</strong> The average number of years of education received by people aged 25 and older.</li>
-                        <li><strong>Expected years of schooling:</strong> The total number of years of schooling a child entering the education system can expect to receive.</li>
-                    </ul>
-                </li>
-                <li><strong>Standard of Living:</strong> Measured by Gross National Income (GNI) per capita, adjusted for purchasing power parity (PPP). This reflects the average income and economic well-being of a country's citizens.</li>
-            </ul>
-            <p>
-                <strong>Calculation Process:</strong>
-            </p>
-            <ol>
-                <li><strong>Normalize each indicator:</strong> Values for each dimension are normalized on a scale from 0 to 1, where 0 represents the lowest possible value and 1 represents the highest.</li>
-                <li><strong>Calculate the dimension indices:</strong> Each dimension's normalized score is calculated by comparing the country's data to the minimum and maximum values observed globally.</li>
-                <li><strong>Compute the HDI:</strong> The HDI is the geometric mean of the three dimension indices, which is given by:
-                    <br>
-                    <code>HDI = √[3]{Health Index × Education Index × Income Index}</code>
-                </li>
-            </ol>
-            <p>
-                The resulting index value ranges from 0 to 1, with higher values indicating higher levels of human development.
-            </p>
+            <div class="hdi-description">
+                <p>
+                    The Human Development Index (HDI) is a composite measure used to evaluate and compare the overall development and quality of life across countries. It was introduced by the United Nations Development Programme (UNDP) in 1990. <br><br>
+                    HDI is calculated using three key dimensions:
+                </p>
+                <ul>
+                    <li><strong>Health:</strong> Measured by life expectancy at birth. This reflects the ability to live a long and healthy life.</li>
+                    <li><strong>Education:</strong> Assessed through two indicators:
+                        <ul>
+                            <li><strong>Mean years of schooling:</strong> The average number of years of education received by people aged 25 and older.</li>
+                            <li><strong>Expected years of schooling:</strong> The total number of years of schooling a child entering the education system can expect to receive.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Standard of Living:</strong> Measured by Gross National Income (GNI) per capita, adjusted for purchasing power parity (PPP). This reflects the average income and economic well-being of a country's citizens.</li>
+                </ul>
+                <p>
+                    <br>We will look at how 2 neighboring countries, the United States and Mexico, compare in each of these dimensions. You can also see how every other country stacks up.
+                </p>
+                <div class="scrollToStart">
+                    <p>Scroll to Start</p>
+                    <img src="src/img/arrow-down.png" alt="">
+                </div>
+            </div>
         </div>
         <div class="chart-title">
             <h2>HDI by Country</h2>
         </div>
         <div id="legend" class="legend-container"></div>
                 </div>
+        <div id="caption" class="caption-container">
+                <h3>The United States ranks much higher than its neighbor Mexico. The US has a very high &#62;0.8 HDI, while Mexico has a high &#60;0.8 HDI.</h3>
+            </div>
         <div id="upper-right-box" class="upper-right-box">
             <h3>Factors of HDI</h3>
             <a href="pages/health.html">Health</a>
-            <a href="pages/education.html">Education</a>
-            <a href="pages/standard_of_living.html">Standard of Living</a>
+            <a href="pages/education.html">Knowledge</a>
+            <a href="pages/standard_of_living.html">Income</a>
         </div>
         <script>
             async function init() {
@@ -110,9 +104,9 @@
                 svg.append("g")
                     .call(d3.axisLeft(y));
 
-        // Create tooltip
-        const tooltip = d3.select("body").append("div")
-            .attr("class", "tooltip");
+                // Create tooltip
+                const tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip");
 
                 // Bars
                 svg.selectAll(".bar")
@@ -125,25 +119,24 @@
                     .attr("height", y.bandwidth())
                     .attr("fill", d => colorScale(d.continent))
                     .on("mouseover", (event, d) => {
-                tooltip
-                    .html(`<strong>Country:</strong> ${d.country}<br>
-                           <strong>HDI:</strong> ${d.HDI}<br>
-                           <strong>Life Expectancy:</strong> ${d.lifeExpectancy}<br>
-                           <strong>Mean Schooling:</strong> ${d.schoolingMean}<br>
-                           <strong>GNI per Capita:</strong> ${d.GNIPerCapita}`)
-                    .style("left", `${event.pageX + 10}px`)
-                    .style("top", `${event.pageY - 28}px`)
-                    .classed("visible", true);
-            })
-            .on("mousemove", (event) => {
-                tooltip
-                    .style("left", `${event.pageX + 10}px`)
-                    .style("top", `${event.pageY - 28}px`);
-            })
-            .on("mouseout", () => {
-                tooltip.classed("visible", false);
-                    
-            });
+                        tooltip
+                            .html(`<strong>Country:</strong> ${d.country}<br>
+                                <strong>HDI:</strong> ${d.HDI}<br>
+                                <strong>Life Expectancy:</strong> ${d.lifeExpectancy}<br>
+                                <strong>Mean Schooling:</strong> ${d.schoolingMean}<br>
+                                <strong>GNI per Capita:</strong> ${d.GNIPerCapita}`)
+                            .style("left", `${event.pageX + 10}px`)
+                            .style("top", `${event.pageY - 28}px`)
+                            .classed("visible", true);
+                    })
+                    .on("mousemove", (event) => {
+                        tooltip
+                            .style("left", `${event.pageX + 10}px`)
+                            .style("top", `${event.pageY - 28}px`);
+                    })
+                    .on("mouseout", () => {
+                        tooltip.classed("visible", false);
+                    });
 
                 // X axis label
                 svg.append("text")
@@ -162,47 +155,145 @@
                     .attr("text-anchor", "middle")
                     .text("Country");
 
-                 // Add legend
-    const legend = d3.select("#legend").append("svg")
-        .attr("width", 150)
-        .attr("height", colorScale.domain().length * 20);
+                // Add legend
+                const legend = d3.select("#legend").append("svg")
+                    .attr("width", 150)
+                    .attr("height", colorScale.domain().length * 20);
 
-    const legendItems = legend.selectAll(".legend-item")
-        .data(colorScale.domain())
-        .enter().append("g")
-        .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+                const legendItems = legend.selectAll(".legend-item")
+                    .data(colorScale.domain())
+                    .enter().append("g")
+                    .attr("class", "legend-item")
+                    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
 
-    legendItems.append("rect")
-        .attr("x", 0)
-        .attr("width", 18)
-        .attr("height", 18)
-        .style("fill", d => colorScale(d));
+                legendItems.append("rect")
+                    .attr("x", 0)
+                    .attr("width", 18)
+                    .attr("height", 18)
+                    .style("fill", d => colorScale(d));
 
-    legendItems.append("text")
-        .attr("x", 25)
-        .attr("y", 14)
-        .text(d => d);   
+                legendItems.append("text")
+                    .attr("x", 25)
+                    .attr("y", 14)
+                    .text(d => d);
+                
+                // Locate the coordinates for the United States
+                const usData = data.find(d => d.country === "United States");
+                if (usData) {
+                    const usX = x(usData.HDI);
+                    const usY = y(usData.country);
 
-    }
+                    // Draw the red arrow pointing to the United States
+                    svg.append("line")
+                        .attr("x1", usX + 150)
+                        .attr("y1", usY + 4)
+                        .attr("x2", usX + 20)
+                        .attr("y2", usY + 4) // End above the point
+                        .attr("stroke", "red")
+                        .attr("stroke-width", 3)
+                        .attr("marker-end", "url(#arrowhead)"); // Add arrowhead
 
-     // Fade in legend on scroll
-     function handleScroll() {
-                    const hdiDescriptionBottom = document.querySelector('.hdi-description').getBoundingClientRect().bottom;
-                    const legend = document.querySelector('#legend');
-                    const upperRightBox = document.querySelector('#upper-right-box');
-                    if (window.scrollY > hdiDescriptionBottom) {
-                        legend.classList.add('visible');
-                        upperRightBox.classList.add('visible');
-                    } else {
-                        legend.classList.remove('visible');
-                        upperRightBox.classList.remove('visible');
-                    }
+                    // Define the arrowhead marker
+                    svg.append("defs").append("marker")
+                        .attr("id", "arrowhead")
+                        .attr("viewBox", "0 0 10 10")
+                        .attr("refX", 0)
+                        .attr("refY", 5)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .append("path")
+                        .attr("d", "M 10 5 L 0 0 L 0 10 z")
+                        .attr("fill", "red");
+
+                    // Add a label box for the United States
+                    svg.append("rect")
+                        .attr("x", usX + 15)
+                        .attr("y", usY - 30)
+                        .attr("width", 35)
+                        .attr("height", 20)
+                        .attr("fill", "white")
+                        .attr("stroke", "black");
+
+                    // Add the label text
+                    svg.append("text")
+                        .attr("x", usX + 33)
+                        .attr("y", usY - 16)
+                        .attr("fill", "red")
+                        .attr("font-size", "12px")
+                        .attr("text-anchor", "middle") // Center text horizontally
+                        .text("USA");
                 }
 
-                // Attach scroll event listener
-                window.addEventListener('scroll', handleScroll);
-                handleScroll();
+                // Locate the coordinates for Mexico
+                const mexData = data.find(d => d.country === "Mexico");
+                if (mexData) {
+                    const mexX = x(mexData.HDI);
+                    const mexY = y(mexData.country);
+
+                    // Draw the red arrow pointing to the United States
+                    svg.append("line")
+                        .attr("x1", mexX + 150)
+                        .attr("y1", mexY + 4)
+                        .attr("x2", mexX + 20)
+                        .attr("y2", mexY + 4) // End above the point
+                        .attr("stroke", "red")
+                        .attr("stroke-width", 3)
+                        .attr("marker-end", "url(#arrowhead)"); // Add arrowhead
+
+                    // Define the arrowhead marker
+                    svg.append("defs").append("marker")
+                        .attr("id", "arrowhead")
+                        .attr("viewBox", "0 0 10 10")
+                        .attr("refX", 0)
+                        .attr("refY", 5)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .append("path")
+                        .attr("d", "M 10 5 L 0 0 L 0 10 z")
+                        .attr("fill", "red");
+
+                    // Add a label box for mexico
+                    svg.append("rect")
+                        .attr("x", mexX + 55)
+                        .attr("y", mexY - 30)
+                        .attr("width", 40)
+                        .attr("height", 20)
+                        .attr("fill", "white")
+                        .attr("stroke", "black");
+
+                    // Add the label text
+                    svg.append("text")
+                        .attr("x", mexX + 73)
+                        .attr("y", mexY - 16)
+                        .attr("fill", "green")
+                        .attr("font-size", "12px")
+                        .attr("text-anchor", "middle") // Center text horizontally
+                        .text("Mexico");
+                }
+            }
+
+            // Fade in legend on scroll
+            function handleScroll() {
+                const hdiDescriptionBottom = document.querySelector('.hdi-description').getBoundingClientRect().bottom;
+                const legend = document.querySelector('#legend');
+                const upperRightBox = document.querySelector('#upper-right-box');
+                const caption = document.querySelector('#caption');
+                if (window.scrollY > hdiDescriptionBottom) {
+                    legend.classList.add('visible');
+                    upperRightBox.classList.add('visible');
+                    caption.classList.add('visible');
+                } else {
+                    legend.classList.remove('visible');
+                    upperRightBox.classList.remove('visible');
+                    caption.classList.remove('visible');
+                }
+            }
+
+            // Attach scroll event listener
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
 
         </script>
     </body>

@@ -1,9 +1,283 @@
 <!DOCTYPE html>
-<html>
+<html  lang="en">
     <head>
-        <title>Example</title>
+        <meta charset="UTF-8">
+        <title>Health</title>
+        <link rel="stylesheet" href="../style.css">
+        <script src="https://d3js.org/d3.v7.min.js"></script>
     </head>
-    <body>
-        <p>Health</p>
+    <body onload="init()">
+        <div class="TitleText2">
+            <div class="introText">
+                <p>HDI Factor</p>
+                <img src="src/img/psyche-title.png" alt="">
+                <p>Health</p>
+                <img class="sparks" id="sparkRight" src="../src/img/sparkRight.png" alt="">
+                <img class="sparks" id="sparkLeft" src="../src/img/sparkLeft.png" alt="">
+            </div>
+            <div class="hdi-description">
+                <p>
+                    This HDI factor is based on life expectancy at birth.
+                </p>
+            </div>
+        </div>
+        <div class="chart-title">
+            <h2>Relationship between Life Expectancy and HDI</h2>
+        </div>
+        <div id="legend" class="legend-container2"></div>
+                </div>
+        <div id="upper-right-box2" class="upper-right-box2">
+            <h3>Factors of HDI</h3>
+            <a href="../index.html">Home</a>
+            <a href="education.html">Knowledge</a>
+            <a href="standard_of_living.html">Income</a>
+        </div>
+        <script>
+            async function init() {
+                const data = await d3.csv('../data/HDI_Table.csv');
+                console.log(data);
+               
+                // Convert HDI to a number
+                data.forEach(d => {
+                    d.HDI = +d.HDI;
+                    d.lifeExpectancy = +d.lifeExpectancy;
+                    d.schoolingMean = +d.schoolingMean;
+                    d.GNIPerCapita = +d.GNIPerCapita;   
+                });
+                 // Sort data by HDI in descending order
+                data.sort((a, b) => b.HDI - a.HDI);
+
+                // Define the color scale based on continent
+                const colorScale = d3.scaleOrdinal()
+                .domain(["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "N/A"])
+                .range(["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FFD700", "#8A2BE2", "000000"]);
+
+
+                const margin = {top: 50, right: 30, bottom: 50, left: 50};
+                const width = 900 - margin.left - margin.right;
+                const height = 600 - margin.top - margin.bottom;
+
+                const svg = d3.select("body").append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+                // X scale
+                const x = d3.scaleLinear()
+                    .domain([50, d3.max(data, d => d.lifeExpectancy)])
+                    .range([0, width]);
+
+                // Y scale
+                const y = d3.scaleLinear()
+                    .domain([0.3, 1])
+                    .range([height, 0]);
+
+                // X axis
+                svg.append("g")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(x));
+
+                // Y axis
+                svg.append("g")
+                    .call(d3.axisLeft(y).ticks(7));
+
+                // Create tooltip
+                const tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip");
+
+                // Scatterplot
+                svg.selectAll(".dot")
+                    .data(data)
+                    .enter().append("circle")
+                    .attr("class", "dot")
+                    .attr("cx", d => x(d.lifeExpectancy))
+                    .attr("cy", d => y(d.HDI))
+                    .attr("r", 5)
+                    .attr("fill", d => colorScale(d.continent))
+                    .on("mouseover", (event, d) => {
+                        tooltip
+                            .html(`<strong>Country:</strong> ${d.country}<br>
+                                <strong>HDI:</strong> ${d.HDI}<br>
+                                <strong>Life Expectancy:</strong> ${d.lifeExpectancy}<br>
+                                <strong>Mean Schooling:</strong> ${d.schoolingMean}<br>
+                                <strong>GNI per Capita:</strong> ${d.GNIPerCapita}`)
+                            .style("left", `${event.pageX + 10}px`)
+                            .style("top", `${event.pageY - 28}px`)
+                            .classed("visible", true);
+                    })
+                    .on("mousemove", (event) => {
+                        tooltip
+                            .style("left", `${event.pageX + 10}px`)
+                            .style("top", `${event.pageY - 28}px`);
+                    })
+                    .on("mouseout", () => {
+                        tooltip.classed("visible", false);
+                    });
+
+                // X axis label
+                svg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom - 10)
+                    .attr("text-anchor", "middle")
+                    .text("Life Expectancy at Birth (Years)");
+
+                // Y axis label
+                svg.append("text")
+                    .attr("class", "axis-label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -height / 2)
+                    .attr("y", -margin.left + 20)
+                    .attr("text-anchor", "middle")
+                    .text("Human Development Index (HDI)");
+
+                 // Add legend
+                const legend = d3.select("#legend").append("svg")
+                    .attr("width", 150)
+                    .attr("height", colorScale.domain().length * 20);
+
+                const legendItems = legend.selectAll(".legend-item")
+                    .data(colorScale.domain())
+                    .enter().append("g")
+                    .attr("class", "legend-item")
+                    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+                legendItems.append("rect")
+                    .attr("x", 0)
+                    .attr("width", 18)
+                    .attr("height", 18)
+                    .style("fill", d => colorScale(d));
+
+                legendItems.append("text")
+                    .attr("x", 25)
+                    .attr("y", 14)
+                    .text(d => d);   
+           
+
+                // Calculate linear regression
+                const regression = linearRegression(data.map(d => d.lifeExpectancy), data.map(d => d.HDI));
+
+                // Draw regression line
+                svg.append("line")
+                    .attr("x1", x(50))
+                    .attr("y1", y(regression.intercept + regression.slope * 50))
+                    .attr("x2", x(d3.max(data, d => d.lifeExpectancy)))
+                    .attr("y2", y(regression.intercept + regression.slope * d3.max(data, d => d.lifeExpectancy)))
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 2);
+
+                // Function to calculate linear regression
+                function linearRegression(x, y) {
+                    const n = x.length;
+                    const sumX = d3.sum(x);
+                    const sumY = d3.sum(y);
+                    const sumXY = d3.sum(x.map((d, i) => d * y[i]));
+                    const sumX2 = d3.sum(x.map(d => d * d));
+
+                    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                    const intercept = (sumY - slope * sumX) / n;
+
+                    return { slope, intercept };
+                }
+
+                // Locate the coordinates for the United States
+                const usData = data.find(d => d.country === "United States");
+                if (usData) {
+                    const usX = x(usData.lifeExpectancy);
+                    const usY = y(usData.HDI);
+
+                    // Draw the red arrow pointing to the United States
+                    svg.append("line")
+                        .attr("x1", usX)
+                        .attr("y1", usY + 150) // Start slightly above the point
+                        .attr("x2", usX)
+                        .attr("y2", usY + 30) // End above the point
+                        .attr("stroke", "red")
+                        .attr("stroke-width", 4)
+                        .attr("marker-end", "url(#arrowhead)"); // Add arrowhead
+
+                    // Define the arrowhead marker
+                    svg.append("defs").append("marker")
+                        .attr("id", "arrowhead")
+                        .attr("viewBox", "0 0 10 10")
+                        .attr("refX", 0)
+                        .attr("refY", 5)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .append("path")
+                        .attr("d", "M 10 5 L 0 0 L 0 10 z")
+                        .attr("fill", "red");
+
+                    // Add a label box for the United States
+                    svg.append("rect")
+                        .attr("x", usX - 50)
+                        .attr("y", usY + 160)
+                        .attr("width", 100)
+                        .attr("height", 20)
+                        .attr("fill", "white")
+                        .attr("stroke", "black");
+
+                    // Add the label text
+                    svg.append("text")
+                        .attr("x", usX)
+                        .attr("y", usY + 174)
+                        .attr("fill", "red")
+                        .attr("font-size", "12px")
+                        .attr("text-anchor", "middle") // Center text horizontally
+                        .text("United States");
+                }
+
+                // Locate the coordinates for Mexico
+                const mexData = data.find(d => d.country === "Mexico");
+                if (mexData) {
+                    const mexX = x(mexData.lifeExpectancy);
+                    const mexY = y(mexData.HDI);
+
+                    // Draw the red arrow pointing to the United States
+                    svg.append("line")
+                        .attr("x1", mexX)
+                        .attr("y1", mexY + 150) // Start slightly above the point
+                        .attr("x2", mexX)
+                        .attr("y2", mexY + 30) // End above the point
+                        .attr("stroke", "red")
+                        .attr("stroke-width", 4)
+                        .attr("marker-end", "url(#arrowhead)"); // Add arrowhead
+
+                    // Define the arrowhead marker
+                    svg.append("defs").append("marker")
+                        .attr("id", "arrowhead")
+                        .attr("viewBox", "0 0 10 10")
+                        .attr("refX", 0)
+                        .attr("refY", 5)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .append("path")
+                        .attr("d", "M 10 5 L 0 0 L 0 10 z")
+                        .attr("fill", "red");
+
+                    // Add a label box for Mexico
+                    svg.append("rect")
+                        .attr("x", mexX - 50)
+                        .attr("y", mexY + 160)
+                        .attr("width", 100)
+                        .attr("height", 20)
+                        .attr("fill", "white")
+                        .attr("stroke", "black");
+
+                    // Add the label text
+                    svg.append("text")
+                        .attr("x", mexX)
+                        .attr("y", mexY + 174)
+                        .attr("fill", "green")
+                        .attr("font-size", "12px")
+                        .attr("text-anchor", "middle") // Center text horizontally
+                        .text("Mexico");
+                }
+            }
+
+        </script>
     </body>
 </html>
