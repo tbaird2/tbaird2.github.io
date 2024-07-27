@@ -31,7 +31,7 @@
                     <li><strong>Standard of Living:</strong> Measured by Gross National Income (GNI) per capita, adjusted for purchasing power parity (PPP). This reflects the average income and economic well-being of a country's citizens.</li>
                 </ul>
                 <p>
-                    <br>We will look at how 2 neighboring countries, the United States and Mexico, compare in each of these dimensions. You can also see how every other country stacks up.
+                    <br>We will look at the two neighboring countries with the greatest difference in HDI, Saudi Arabia and Yemen, and see how they stack up against each other in each factor that is used to calculate HDI.
                 </p>
                 <div class="scrollToStart">
                     <p>Scroll to Start</p>
@@ -45,7 +45,12 @@
         <div id="legend" class="legend-container"></div>
                 </div>
         <div id="caption" class="caption-container">
-                <h3>The United States ranks much higher than its neighbor Mexico. The US has a very high &#62;0.8 HDI, while Mexico has a high &#60;0.8 HDI.</h3>
+                <h3>Saudi Arabia's HDI ranks much higher than its neighbor Yemen. 
+                    <ul>
+                        <li>Saudi Arabia has a very high (&#62;0.8) HDI.</li>
+                        <li>Yemen has a low (&#60;0.55) HDI.</li>
+                    </ul>
+                    </h3>
             </div>
         <div id="upper-right-box" class="upper-right-box">
             <h3>Factors of HDI</h3>
@@ -53,6 +58,8 @@
             <a href="pages/education.html">Knowledge</a>
             <a href="pages/standard_of_living.html">Income</a>
         </div>
+        <div id ="arrow" class="arrow"></div>
+        <div id="arrow-label" class="arrow-label">Click here to see other HDI factors</div>
         <script>
             async function init() {
                 const data = await d3.csv('data/HDI_Table.csv');
@@ -176,19 +183,19 @@
                     .attr("x", 25)
                     .attr("y", 14)
                     .text(d => d);
-                
-                // Locate the coordinates for the United States
-                const usData = data.find(d => d.country === "United States");
-                if (usData) {
-                    const usX = x(usData.HDI);
-                    const usY = y(usData.country);
 
-                    // Draw the red arrow pointing to the United States
+                // Locate the coordinates for Saudi Arabia
+                const saudiData = data.find(d => d.country === "Saudi Arabia");
+                if (saudiData) {
+                    const saudiX = x(saudiData.HDI);
+                    const saudiY = y(saudiData.country);
+
+                    // Draw the red arrow pointing to Saudi Arabia
                     svg.append("line")
-                        .attr("x1", usX + 150)
-                        .attr("y1", usY + 4)
-                        .attr("x2", usX + 20)
-                        .attr("y2", usY + 4) // End above the point
+                        .attr("x1", saudiX + 150)
+                        .attr("y1", saudiY + 4)
+                        .attr("x2", saudiX + 20)
+                        .attr("y2", saudiY + 4) // End above the point
                         .attr("stroke", "red")
                         .attr("stroke-width", 3)
                         .attr("marker-end", "url(#arrowhead)"); // Add arrowhead
@@ -206,37 +213,37 @@
                         .attr("d", "M 10 5 L 0 0 L 0 10 z")
                         .attr("fill", "red");
 
-                    // Add a label box for the United States
+                    // Add a label box for Saudi Arabia
                     svg.append("rect")
-                        .attr("x", usX + 15)
-                        .attr("y", usY - 30)
-                        .attr("width", 35)
+                        .attr("x", saudiX + 10)
+                        .attr("y", saudiY - 30)
+                        .attr("width", 68)
                         .attr("height", 20)
                         .attr("fill", "white")
                         .attr("stroke", "black");
 
                     // Add the label text
                     svg.append("text")
-                        .attr("x", usX + 33)
-                        .attr("y", usY - 16)
-                        .attr("fill", "red")
+                        .attr("x", saudiX + 44)
+                        .attr("y", saudiY - 16)
+                        .attr("fill", "green")
                         .attr("font-size", "12px")
                         .attr("text-anchor", "middle") // Center text horizontally
-                        .text("USA");
+                        .text("Saudi Arabia");
                 }
 
-                // Locate the coordinates for Mexico
-                const mexData = data.find(d => d.country === "Mexico");
-                if (mexData) {
-                    const mexX = x(mexData.HDI);
-                    const mexY = y(mexData.country);
+                // Locate the coordinates for Yemen
+                const yemenData = data.find(d => d.country === "Yemen");
+                if (yemenData) {
+                    const yemenX = x(yemenData.HDI);
+                    const yemenY = y(yemenData.country);
 
-                    // Draw the red arrow pointing to the United States
+                    // Draw the red arrow pointing to Yemen
                     svg.append("line")
-                        .attr("x1", mexX + 150)
-                        .attr("y1", mexY + 4)
-                        .attr("x2", mexX + 20)
-                        .attr("y2", mexY + 4) // End above the point
+                        .attr("x1", yemenX + 150)
+                        .attr("y1", yemenY + 4)
+                        .attr("x2", yemenX + 20)
+                        .attr("y2", yemenY + 4) // End above the point
                         .attr("stroke", "red")
                         .attr("stroke-width", 3)
                         .attr("marker-end", "url(#arrowhead)"); // Add arrowhead
@@ -254,10 +261,10 @@
                         .attr("d", "M 10 5 L 0 0 L 0 10 z")
                         .attr("fill", "red");
 
-                    // Add a label box for mexico
+                    // Add a label box for Yemen
                     svg.append("rect")
-                        .attr("x", mexX + 55)
-                        .attr("y", mexY - 30)
+                        .attr("x", yemenX + 55)
+                        .attr("y", yemenY - 30)
                         .attr("width", 40)
                         .attr("height", 20)
                         .attr("fill", "white")
@@ -265,12 +272,12 @@
 
                     // Add the label text
                     svg.append("text")
-                        .attr("x", mexX + 73)
-                        .attr("y", mexY - 16)
-                        .attr("fill", "green")
+                        .attr("x", yemenX + 74)
+                        .attr("y", yemenY - 16)
+                        .attr("fill", "red")
                         .attr("font-size", "12px")
                         .attr("text-anchor", "middle") // Center text horizontally
-                        .text("Mexico");
+                        .text("Yemen");
                 }
             }
 
@@ -280,14 +287,20 @@
                 const legend = document.querySelector('#legend');
                 const upperRightBox = document.querySelector('#upper-right-box');
                 const caption = document.querySelector('#caption');
+                const arrow = document.querySelector('#arrow');
+                const arrowLabel = document.querySelector('#arrow-label');
                 if (window.scrollY > hdiDescriptionBottom) {
                     legend.classList.add('visible');
                     upperRightBox.classList.add('visible');
                     caption.classList.add('visible');
+                    arrow.classList.add('visible');
+                    arrowLabel.classList.add('visible');
                 } else {
                     legend.classList.remove('visible');
                     upperRightBox.classList.remove('visible');
                     caption.classList.remove('visible');
+                    arrow.classList.remove('visible');
+                    arrowLabel.classList.remove('visible');
                 }
             }
 

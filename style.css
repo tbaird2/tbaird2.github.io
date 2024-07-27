@@ -144,7 +144,7 @@ ul {
     opacity: 0;
     transition: opacity 1s ease-in-out;
     position: fixed;
-    top: 1800px;
+    top: 180px;
     right: 20px;
     background-color: #fff;
     border: 2px solid #333; /* Stronger border */
@@ -152,11 +152,28 @@ ul {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
     z-index: 1000;
+    width:400px;
 }
 
 /* caption container visible */
 .caption-container.visible {
     opacity: 1;
+}
+
+/* Caption container initially hidden */
+.caption-container2 {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+    position: fixed;
+    top: 180px;
+    right: 20px;
+    background-color: #fff;
+    border: 2px solid #333; /* Stronger border */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+    z-index: 1000;
+    width:400px;
 }
 
 /* Legend container for other html pages */
@@ -228,6 +245,39 @@ ul {
 
 .upper-right-box2 a:hover {
     text-decoration: underline;
+}
+
+#arrow {
+    position: fixed;
+    top: 60px; /* Adjust this value to point correctly */
+    right: 200px; /* Adjust this value to point correctly */
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 20px solid red; /* Arrow color */
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+#arrow.visible {
+    opacity: 1;
+}
+
+.arrow-label {
+    position: fixed;
+    top: 70px; /* Adjust this value to position correctly */
+    right: 230px; /* Adjust this value to position correctly */
+    color: red;
+    font-weight: bold;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.arrow-label.visible {
+    opacity: 1;
 }
 
 /* Tooltip styles */
